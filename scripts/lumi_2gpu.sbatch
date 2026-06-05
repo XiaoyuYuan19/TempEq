@@ -26,7 +26,10 @@
 PROJECT_DIR="/scratch/project_462001364/$USER/TempEq"
 cd "$PROJECT_DIR"
 
-# Load a named config from configs/ if CONFIG=name is set.
+# Load a named config from configs/ if CONFIG=name is set. Inline env
+# vars (e.g. EPOCHS=2 sbatch ...) take precedence over the config file:
+# values in the config are only applied when the variable is not already
+# set in the calling environment.
 CONFIG="${CONFIG:-}"
 if [ -n "$CONFIG" ]; then
     CFG_PATH="$PROJECT_DIR/configs/${CONFIG}.env"
@@ -34,10 +37,17 @@ if [ -n "$CONFIG" ]; then
         echo "ERROR: config file not found: $CFG_PATH" >&2
         exit 1
     fi
-    set -a
-    # shellcheck disable=SC1090
-    source "$CFG_PATH"
-    set +a
+    while IFS='=' read -r key value; do
+        # skip comments and blank lines
+        [[ "$key" =~ ^[[:space:]]*# ]] && continue
+        [[ -z "${key// }" ]] && continue
+        # strip whitespace around key
+        key="${key// }"
+        # only export if not already set in the environment
+        if [ -z "${!key+x}" ]; then
+            export "$key=$value"
+        fi
+    done < "$CFG_PATH"
 fi
 
 # Defaults (apply when neither config nor inline override is given).
