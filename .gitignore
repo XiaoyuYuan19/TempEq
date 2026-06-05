@@ -1,0 +1,22 @@
+__pycache__/
+*.pyc
+*.pyo
+
+# Run artifacts
+logs/
+runs/
+checkpoints/
+*.pt
+*.pth
+
+# Data caches
+data/
+cache/
+*.tar
+*.zip
+*.rar
+
+# Editor
+.vscode/
+.idea/
+.DS_Store
