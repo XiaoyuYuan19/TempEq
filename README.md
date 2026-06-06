@@ -55,26 +55,6 @@ python train.py \
     --probe-every 5
 ```
 
-## Reproducing the paper tables (LUMI)
-
-The `configs/` directory holds canonical `.env` files for each row of
-the main results table. Launch with the `CONFIG=` env var:
-
-```bash
-# headline: clip-level TempEq
-CONFIG=clip_pf2    sbatch scripts/lumi_2gpu.sbatch
-
-# baselines
-CONFIG=clip_simclr sbatch scripts/lumi_2gpu.sbatch
-CONFIG=clip_vicreg sbatch scripts/lumi_2gpu.sbatch
-CONFIG=frame_pf2    sbatch scripts/lumi_2gpu.sbatch
-CONFIG=frame_simclr sbatch scripts/lumi_2gpu.sbatch
-CONFIG=frame_vicreg sbatch scripts/lumi_2gpu.sbatch
-```
-
-Each run writes `logs/<RUN_NAME>/train.log` (per-epoch loss + linear-probe
-accuracy) and periodic checkpoints `ssl_ep*.pt` / `ssl_latest.pt`.
-
 ## Standalone linear probe
 
 `train.py` runs the probe inline every `--probe-every` epochs. To re-probe
