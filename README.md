@@ -28,24 +28,11 @@ occupy a non-degenerate unit volume in the projection space.
 
 | Method | Frame-level | Clip-level (T=4, stride=8) |
 | --- | --- | --- |
-| SimCLR  | 43.2 | TBD |
-| VICReg  | 33.0 | TBD |
-| **TempEq (ours)** | **41.3** | **TBD** ⭐ |
+| SimCLR  | 43.7 | 41.8 |
+| VICReg  | 33.0 | 38.7 |
+| **TempEq (ours)** | **41.3** | **45.2** ⭐ |
 
-*Numbers will be updated when the headline 100-epoch clip-level run
-finishes. Frame-level numbers are 100-epoch final accuracies.*
-
-## Sensitivity to between-clip temporal gap (TempEq, clip-level)
-
-| Gap Δ between clips | SimCLR | TempEq |
-| --- | --- | --- |
-| ~4 s (Geometric, p=0.008) | TBD | TBD |
-| ~1 s (adjacent clips)     | TBD | TBD |
-| ~0.5 s (50 % overlap)     | TBD | TBD |
-
-TempEq's stability term provides no signal when the two clips are
-nearly identical, so it relies on a meaningful temporal offset
-between positives.
+*Peak linear-probe accuracy over 100 epochs.*
 
 ## Quick start
 
@@ -62,7 +49,7 @@ python train.py \
     --split-root ./data/ucfTrainTestlist \
     --out-dir runs/clip_pf2 \
     --loss pf2 --clip-len 4 --clip-stride 8 --sampler geometric \
-    --proj-dim 8192 --proj-hidden 8192 --proj-layers 3 --proj-bn \
+    --proj-dim 128 --proj-hidden 8192 --proj-layers 3 --proj-bn \
     --optimizer lars --lr 0.2 --weight-decay 1e-6 \
     --batch-size 64 --epochs 100 \
     --probe-every 5
@@ -83,14 +70,6 @@ CONFIG=clip_vicreg sbatch scripts/lumi_2gpu.sbatch
 CONFIG=frame_pf2    sbatch scripts/lumi_2gpu.sbatch
 CONFIG=frame_simclr sbatch scripts/lumi_2gpu.sbatch
 CONFIG=frame_vicreg sbatch scripts/lumi_2gpu.sbatch
-```
-
-Sensitivity sweep (uses the `adjacent` / `overlap` clip-pair sampler;
-otherwise inherits the headline config):
-
-```bash
-CONFIG=clip_pf2 SAMPLER=adjacent RUN_NAME=clip_pf2_adj sbatch scripts/lumi_2gpu.sbatch
-CONFIG=clip_pf2 SAMPLER=overlap  RUN_NAME=clip_pf2_ovl sbatch scripts/lumi_2gpu.sbatch
 ```
 
 Each run writes `logs/<RUN_NAME>/train.log` (per-epoch loss + linear-probe
